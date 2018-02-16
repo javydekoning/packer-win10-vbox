@@ -1,0 +1,41 @@
+{
+  "builders": [
+    {
+      "name":                 "win10-1709-updated",
+      "type":                 "virtualbox-ovf",
+      "source_path":          "./win10-1709-updated/win10-1709-updated.ovf",
+      "output_directory":     "./win10-1709-customized/",
+      "vm_name":              "win10-1709-customized",
+      "guest_additions_mode": "disable",
+      "headless":             true,
+      "boot_wait":           "30s",
+      "communicator":        "winrm",
+      "winrm_username":      "vagrant",
+      "winrm_password":      "vagrant",
+      "winrm_timeout":       "12h",
+      "winrm_insecure":      "true",
+      "winrm_port":          "5986",
+      "winrm_use_ssl":       "true", 
+      "shutdown_timeout":    "1h",
+      "shutdown_command":    "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\""
+    }
+  ],
+  "provisioners": [
+    {
+        "type":              "powershell",
+        "script":            "scripts/customize.ps1",
+        "elevated_user":     "vagrant",
+        "elevated_password": "vagrant"
+    },
+    {
+        "type":              "windows-restart",
+        "restart_timeout":   "1h"
+    },
+    {
+        "type":              "powershell",
+        "script":            "scripts/clean_and_scrub.ps1",
+        "elevated_user":     "vagrant",
+        "elevated_password": "vagrant"
+    }
+  ]
+}

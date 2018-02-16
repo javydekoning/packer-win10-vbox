@@ -1,0 +1,76 @@
+{
+  "builders": [
+    {
+      "name": "win10-1709-updated",
+      "type": "virtualbox-ovf",
+      "source_path": "./win10-1709-base/win10-1709-base.ovf",
+      "output_directory": "./win10-1709-updated/",
+      "vm_name": "win10-1709-updated",
+      "guest_additions_mode": "disable",
+      "headless": true,
+      "boot_wait": "30s",
+      "communicator": "winrm",
+      "winrm_username": "vagrant",
+      "winrm_password": "vagrant",
+      "winrm_timeout": "12h",
+      "winrm_insecure": "true",
+      "winrm_port": "5986",
+      "winrm_use_ssl": "true", 
+      "shutdown_timeout": "1h",
+      "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\""
+    }
+  ],
+  "provisioners": [
+    {
+        "type": "file",
+        "source": "./scripts/WUInstallAMD64.exe",
+        "destination": "c:/windows/SYSTEM32/"
+    },
+    {
+        "type": "powershell",
+        "script": "scripts/execwinupd.ps1",
+        "elevated_user": "vagrant",
+        "elevated_password": "vagrant",
+        "valid_exit_codes": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            10,
+            11,
+            15
+        ]
+    },
+    {
+        "type": "windows-restart",
+        "restart_timeout": "1h"
+    },
+    {
+        "type": "powershell",
+        "script": "scripts/execwinupd.ps1",
+        "elevated_user": "vagrant",
+        "elevated_password": "vagrant",
+        "valid_exit_codes": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            10,
+            11,
+            15
+        ]
+    },
+    {
+        "type": "windows-restart",
+        "restart_timeout": "1h"
+    },
+    {
+        "type": "powershell",
+        "script": "scripts/clean_and_scrub.ps1",
+        "elevated_user": "vagrant",
+        "elevated_password": "vagrant"
+    }
+  ]
+}
